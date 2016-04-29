@@ -14,3 +14,5 @@
 
 // TODO: reference additional headers your program requires here
 #include "DictionaryTrieNode.h"
+#include "DictionaryTrie.h"
+#include "Logging.h"

@@ -11,32 +11,32 @@ const int kArbitraryMaxPath = 256;
 
 void pauseForClose()
 {
-	std::cout << "Hit enter to close" << std::endl;
+	writeLogLine("Hit enter to close");
 	//Wait for input
 	std::cin.get();
 }
 
 int main(int argc, char *argv[], char* envp[])
 {
-	std::cout << "Starting boggle solver" << std::endl;
+	writeLogLine("Starting boggle solver");
 
 	char path_to_dictionary[kArbitraryMaxPath];
 	char path_to_puzzle[kArbitraryMaxPath];
 	
 	if(argc != 3)
 	{
-		std::cout << "Boggle Solver Command Line Arguments:" << std::endl;
-		std::cout << "BoggleSolver.exe {PATH_TO_DICTIONARY} {PATH_TO_PUZZLE}" << std::endl;
+		writeLogLine("Boggle Solver Command Line Arguments:");
+		writeLogLine("BoggleSolver.exe {PATH_TO_DICTIONARY} {PATH_TO_PUZZLE}");
 		pauseForClose();
 		return 1;
 	}
 	else
 	{
 		strcpy_s(path_to_dictionary, argv[1]);
-		std::cout << "Path to dictionary: " << path_to_dictionary << std::endl;
+		writeLogLineFormatted("Path to dictionary: %s", path_to_dictionary);
 
 		strcpy_s(path_to_puzzle, argv[2]);
-		std::cout << "Path to puzzle: " << path_to_puzzle << std::endl;
+		writeLogLineFormatted("Path to puzzle: %s", path_to_puzzle);
 	}
 
 	pauseForClose();
