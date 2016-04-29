@@ -1,8 +1,16 @@
 #include "stdafx.h"
 
-DictionaryTrieNode::DictionaryTrieNode():
+DictionaryTrieNode::DictionaryTrieNode() :
 	mWord(nullptr),
-	mChildren()
+	mChildren(),
+	parent(nullptr)
+{
+}
+
+DictionaryTrieNode::DictionaryTrieNode(DictionaryTrieNode* parent) :
+	mWord(nullptr),
+	mChildren(),
+	parent(parent)
 {	
 }
 
@@ -20,7 +28,7 @@ DictionaryTrieNode* DictionaryTrieNode::addLetter(char letter)
 		return &it->second;
 	}
 
-	DictionaryTrieNode* node = new DictionaryTrieNode();
+	DictionaryTrieNode* node = new DictionaryTrieNode(this);
 	mChildren[letter] = *node;
 	return node;
 }
@@ -36,5 +44,11 @@ DictionaryTrieNode* DictionaryTrieNode::searchLetter(char letter)
 	// not found - return null pointer
 	return nullptr;
 }
+
+DictionaryTrieNode* DictionaryTrieNode::getParent() const
+{
+	return parent;
+}
+
 
 

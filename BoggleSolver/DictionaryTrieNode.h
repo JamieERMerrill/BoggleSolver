@@ -9,6 +9,7 @@ class DictionaryTrieNode
 typedef std::map<char, DictionaryTrieNode> DictionaryTrieNodeMap;
 public:
 	DictionaryTrieNode();
+	DictionaryTrieNode(DictionaryTrieNode* parent);
 	~DictionaryTrieNode();
 
 	void SetIsWord(char* word)
@@ -18,9 +19,11 @@ public:
 
 	DictionaryTrieNode* addLetter(char letter);
 	DictionaryTrieNode* searchLetter(char letter);
+	DictionaryTrieNode* getParent() const;
 
 private:
 	char* mWord;
+	DictionaryTrieNode* parent;
 	DictionaryTrieNodeMap mChildren;
 
 };
