@@ -21,10 +21,19 @@ public:
 	DictionaryTrieNode* searchLetter(char letter);
 	DictionaryTrieNode* getParent() const;
 
+	bool isWord() const
+	{
+		return mWord != nullptr && mWord[0] != '\0';
+	};
+
+	char* getWord() const
+	{
+		return mWord;
+	};
+
 private:
 	char* mWord;
 	DictionaryTrieNode* parent;
 	DictionaryTrieNodeMap mChildren;
-
 };
 

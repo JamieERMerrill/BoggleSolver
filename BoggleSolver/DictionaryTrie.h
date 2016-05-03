@@ -8,6 +8,7 @@ class DictionaryTrie
 private:
 	DictionaryTrieNode* head;
 	DictionaryTrieNode* cursor;
+
 public:
 	DictionaryTrie();
 	~DictionaryTrie();
@@ -16,6 +17,8 @@ public:
 	void add(char* word);
 
 	void resetCursor();
-	bool searchAtCursor(char letter);
+	bool searchAtCursor(char letter) const;
 	void cursorToParent();
+
+	DictionaryTrieNode* getHead();
 };

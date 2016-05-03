@@ -14,3 +14,5 @@
 #include "DictionaryTrieNode.h"
 #include "DictionaryTrie.h"
 #include "Logging.h"
+#include "Tests.h"
+#include "TrieCursor.h"

@@ -16,7 +16,6 @@ DictionaryTrieNode::DictionaryTrieNode(DictionaryTrieNode* parent) :
 
 DictionaryTrieNode::~DictionaryTrieNode()
 {
-	delete &mChildren;
 }
 
 
