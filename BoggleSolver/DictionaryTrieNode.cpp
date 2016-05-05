@@ -24,11 +24,11 @@ DictionaryTrieNode* DictionaryTrieNode::addLetter(char letter)
 	auto it = mChildren.find(letter);
 	if(it != mChildren.end())
 	{
-		return &it->second;
+		return it->second;
 	}
 
 	DictionaryTrieNode* node = new DictionaryTrieNode(this);
-	mChildren[letter] = *node;
+	mChildren[letter] = node;
 	return node;
 }
 
@@ -37,7 +37,7 @@ DictionaryTrieNode* DictionaryTrieNode::searchLetter(char letter)
 	auto it = mChildren.find(letter);
 	if(it != mChildren.end())
 	{
-		return &it->second;
+		return it->second;
 	}
 
 	// not found - return null pointer

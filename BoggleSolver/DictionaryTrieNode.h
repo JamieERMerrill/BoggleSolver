@@ -6,7 +6,7 @@
 class DictionaryTrieNode
 {
 
-typedef std::map<char, DictionaryTrieNode> DictionaryTrieNodeMap;
+typedef std::map<char, DictionaryTrieNode*> DictionaryTrieNodeMap;
 public:
 	DictionaryTrieNode();
 	DictionaryTrieNode(DictionaryTrieNode* parent);
