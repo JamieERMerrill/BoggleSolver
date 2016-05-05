@@ -69,6 +69,22 @@ bool test_LoadSinglePlural()
 	return got_c && got_a && got_t && got_s && isWord_cat && isWord_cats;
 }
 
+bool test_SimpleBoardLookup()
+{
+	Board testBoard("abcdefghi", 3, 3);
+
+	char letterOne = testBoard.atGridLoc(0, 0);
+	bool is_a = (letterOne == 'a');
+
+	char letterFive = testBoard.atGridLoc(1, 1);
+	bool is_e = (letterFive == 'e');
+
+	char letterNine = testBoard.atGridLoc(2, 2);
+	bool is_i = (letterNine == 'i');
+
+	return is_a && is_e && is_i;
+}
+
 bool runTests()
 {
 	bool loadWordSimple = test_LoadWordSimple();
@@ -79,6 +95,9 @@ bool runTests()
 
 	bool loadSinglePlural = test_LoadSinglePlural();
 	logTest("Load Single and Plural Words", loadSinglePlural);
+
+	bool simpleBoardLookup = test_SimpleBoardLookup();
+	logTest("Simple Board Lookup", simpleBoardLookup);
 
 	return loadWordSimple && loadMultipleWords;
 }

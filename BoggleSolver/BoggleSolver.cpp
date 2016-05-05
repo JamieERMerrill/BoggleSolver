@@ -62,6 +62,10 @@ int main(int argc, char *argv[], char* envp[])
 	DictionaryTrie theDictionary;
 	theDictionary.loadFromFile(path_to_dictionary);
 
+	writeLogLine("Loading board");
+	Board theBoard;
+	theBoard.loadFromFile(path_to_puzzle);
+
 	pauseForClose();
 
 	return 0;

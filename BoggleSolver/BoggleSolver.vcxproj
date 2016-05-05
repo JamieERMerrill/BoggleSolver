@@ -226,6 +226,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Board.h" />
     <ClInclude Include="DictionaryTrie.h" />
     <ClInclude Include="DictionaryTrieNode.h" />
     <ClInclude Include="Logging.h" />
@@ -235,6 +236,7 @@
     <ClInclude Include="TrieCursor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Board.cpp" />
     <ClCompile Include="BoggleSolver.cpp" />
     <ClCompile Include="DictionaryTrie.cpp" />
     <ClCompile Include="DictionaryTrieNode.cpp" />
