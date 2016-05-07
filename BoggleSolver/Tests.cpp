@@ -71,18 +71,115 @@ bool test_LoadSinglePlural()
 
 bool test_SimpleBoardLookup()
 {
+	// board is:
+	// a b c
+	// d e f
+	// g h i
 	Board testBoard("abcdefghi", 3, 3);
 
-	char letterOne = testBoard.atGridLoc(0, 0);
+	char letterOne = testBoard.AtGridLoc(0, 0);
 	bool is_a = (letterOne == 'a');
 
-	char letterFive = testBoard.atGridLoc(1, 1);
+	char letterFive = testBoard.AtGridLoc(1, 1);
 	bool is_e = (letterFive == 'e');
 
-	char letterNine = testBoard.atGridLoc(2, 2);
+	char letterNine = testBoard.AtGridLoc(2, 2);
 	bool is_i = (letterNine == 'i');
 
 	return is_a && is_e && is_i;
+}
+
+bool test_SimpleBoardCursor()
+{
+	// board is:
+	// a b c d
+	// e f g h
+	Board testBoard("abcdefgh", 4, 2);
+	BoardCursor testCursor(&testBoard);
+
+	testCursor.StartFrom(0, 0);
+	bool wentDown = testCursor.Move(Down);
+	bool wentRight1 = testCursor.Move(Right);
+	bool wentRight2 = testCursor.Move(Right);
+	bool wentUp = testCursor.Move(Up);
+	bool wentLeft = testCursor.Move(Left);
+
+	char* word = testCursor.GetWord();
+	bool rightWord = strcmp(word, "aefgcb") == 0;
+	bool movements = wentDown && wentRight1 && wentRight2 && wentUp && wentLeft;
+	return rightWord && movements;
+}
+
+bool test_InvalidCursorMoves()
+{
+	Board testBoard("a", 1, 1);
+	BoardCursor testCursor(&testBoard);
+
+	testCursor.StartFrom(0, 0);
+	bool wentDown = testCursor.Move(Down);
+	bool wentRight = testCursor.Move(Right);
+	bool wentLeft = testCursor.Move(Left);
+	bool wentUp = testCursor.Move(Up);
+
+	char* word = testCursor.GetWord();
+	bool rightWord = strcmp(word, "a") == 0;
+	bool movements = !wentLeft && !wentDown && !wentRight && !wentUp;
+	return rightWord && movements;
+}
+
+bool test_CannotRepeatPosition()
+{
+	Board testBoard("ab", 2, 1);
+	BoardCursor testCursor(&testBoard);
+
+	testCursor.StartFrom(0, 0);
+	bool wentRight = testCursor.Move(Right);
+	bool wentLeft = testCursor.Move(Left);
+
+	char* word = testCursor.GetWord();
+	bool rightWord = strcmp(word, "ab") == 0;
+	bool movements = wentRight && !wentLeft;
+	return rightWord && movements;
+}
+
+bool test_CusorPop()
+{
+	// Board:
+	// a b c
+	// d e f
+	Board testBoard("abcdef", 3, 2);
+	BoardCursor testCursor(&testBoard);
+
+	testCursor.StartFrom(0, 0);
+	bool wentRight1 = testCursor.Move(Right);
+	bool wentRight2 = testCursor.Move(Right);
+	char* firstWord = testCursor.GetWord();
+
+	testCursor.Pop();
+
+	bool wentDown = testCursor.Move(Down);
+	char* secondWord = testCursor.GetWord();
+
+	bool firstWordRight = strcmp(firstWord, "abc") == 0;
+	bool secondWordRight = strcmp(secondWord, "abe") == 0;
+	bool wordsRight = firstWordRight && secondWordRight;
+	bool movements = wentRight1 && wentRight2 && wentDown;
+	return wordsRight && movements;
+}
+
+bool test_PositionCompares()
+{
+	Position pos1 = Position{ 1, 1 };
+	Position pos2 = Position{ 1, 2 };
+	Position pos3 = Position{ 2, 1 };
+	Position pos4 = Position{ 1, 1 };
+
+	bool diffY = pos1 == pos2;
+	bool diffX = pos1 == pos3;
+	bool diffBoth = pos2 == pos3;
+	bool same = pos1 == pos4;
+
+	return !diffY && !diffX && !diffBoth && same;
 }
 
 bool runTests()
@@ -99,5 +196,21 @@ bool runTests()
 	bool simpleBoardLookup = test_SimpleBoardLookup();
 	logTest("Simple Board Lookup", simpleBoardLookup);
 
-	return loadWordSimple && loadMultipleWords;
+	bool simpleBoardCursor = test_SimpleBoardCursor();
+	logTest("Simple Board Cursor Behavior", simpleBoardCursor);
+
+	bool invalidCursorMoves = test_InvalidCursorMoves();
+	logTest("Invalid Cursor Moves", invalidCursorMoves);
+
+	bool cannotRepeat = test_CannotRepeatPosition();
+	logTest("Cannot repeat board position", cannotRepeat);
+
+	bool cursorPop = test_CusorPop();
+	logTest("Cursor pop operation", cursorPop);
+
+	bool positionCompares = test_PositionCompares();
+	logTest("Position comparison operator", positionCompares);
+
+	return loadWordSimple && loadMultipleWords && loadSinglePlural && simpleBoardLookup 
+		&& simpleBoardCursor && invalidCursorMoves && cannotRepeat && cursorPop && positionCompares;
 }

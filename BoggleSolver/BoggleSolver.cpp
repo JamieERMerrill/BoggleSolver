@@ -60,11 +60,11 @@ int main(int argc, char *argv[], char* envp[])
 
 	writeLogLine("Loading dictionary");
 	DictionaryTrie theDictionary;
-	theDictionary.loadFromFile(path_to_dictionary);
+	theDictionary.LoadFromFile(path_to_dictionary);
 
 	writeLogLine("Loading board");
 	Board theBoard;
-	theBoard.loadFromFile(path_to_puzzle);
+	theBoard.LoadFromFile(path_to_puzzle);
 
 	pauseForClose();
 

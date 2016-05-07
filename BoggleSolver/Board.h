@@ -15,12 +15,23 @@ public:
 	Board(char* board, int columns, int rows);
 	~Board();
 
-	bool loadFromFile(char* filePath);
+	bool LoadFromFile(char* filePath);
 
-	char atGridLoc(int column, int row) const;
-	char atGridIndex(int index) const;
+	char AtGridLoc(int column, int row) const;
+	char AtGridIndex(int index) const;
 
-	int getGridIndex(int column, int row) const;
+	int GetGridIndex(int column, int row) const;
 
-	bool validIndex(int column, int row) const;
+	bool ValidIndex(int column, int row) const;
+
+	int ColumnCount() const
+	{
+		return mColumns;
+	};
+
+	int RowCount() const
+	{
+		return mRows;
+	};
+
 };

@@ -18,8 +18,8 @@ Board::Board(char * board, int columns, int rows):
 	mRows(rows)
 {
 	// allow us to safely free our version.
-	mBoardArray = new char[strlen(board)];
-	memcpy(mBoardArray, board, strlen(board));
+	mBoardArray = new char[columns * rows];
+	memcpy(mBoardArray, board, columns * rows);
 }
 
 Board::~Board()
@@ -30,7 +30,7 @@ Board::~Board()
 	}
 }
 
-bool Board::loadFromFile(char * filePath)
+bool Board::LoadFromFile(char * filePath)
 {
 	std::fstream stream(filePath, std::ios_base::in);
 	if (stream.is_open())
@@ -100,23 +100,25 @@ bool Board::loadFromFile(char * filePath)
 	return false;
 }
 
-char Board::atGridLoc(int column, int row) const
+char Board::AtGridLoc(int column, int row) const
 {
-	int asIndex = getGridIndex(column, row);
-	return atGridIndex(asIndex);
+	int asIndex = GetGridIndex(column, row);
+	return AtGridIndex(asIndex);
 }
 
-char Board::atGridIndex(int index) const
+char Board::AtGridIndex(int index) const
 {
 	return mBoardArray[index];
 }
 
-int Board::getGridIndex(int column, int row) const
+int Board::GetGridIndex(int column, int row) const
 {
 	return row * mColumns + column;
 }
 
-bool Board::validIndex(int column, int row) const
+bool Board::ValidIndex(int column, int row) const
 {
-	return column < mColumns && row < mRows;
+	bool validColumn = (-1 < column && column < mColumns);
+	bool validRow = (-1 < row && row < mRows);
+	return validColumn && validRow;
 }

@@ -17,3 +17,4 @@
 #include "Tests.h"
 #include "TrieCursor.h"
 #include "Board.h"
+#include "BoardCursor.h"
