@@ -241,6 +241,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Tests.h" />
+    <ClInclude Include="ThreadsafeStack.h" />
     <ClInclude Include="TrieCursor.h" />
   </ItemGroup>
   <ItemGroup>

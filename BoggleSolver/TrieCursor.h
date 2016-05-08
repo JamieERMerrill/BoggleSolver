@@ -17,4 +17,14 @@ public:
 	bool hasChild(char letter) const;
 	bool goToChild(char letter);
 	void goToParent();
+
+	void LockNode()
+	{
+		currentNode->Lock();
+	}
+
+	void UnlockNode()
+	{
+		currentNode->Unlock();
+	}
 };

@@ -45,6 +45,9 @@
     <ClInclude Include="CharIndexMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadsafeStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

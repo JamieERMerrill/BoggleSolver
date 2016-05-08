@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
         for line in lines:
             if line in word_set:
-                print("Found repeated word {}").format(line)
+                print("Found repeated word {}".format(line))
                 dup_count += 1
             else:
                 word_set.add(line)

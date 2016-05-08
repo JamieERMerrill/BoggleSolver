@@ -6,9 +6,11 @@
 #include <cstring>
 #include <time.h>
 #include <fstream>
+#include <thread>
 
 // Purely arbitrary to make max path length reasonable
 const int kArbitraryMaxPath = 256;
+const int kThreadPoolSize = 10;
 
 
 void pauseForClose()
@@ -18,9 +20,9 @@ void pauseForClose()
 	std::cin.get();
 }
 
-void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::vector<char*>* words);
+void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, ThreadsafeStack<char*>* words);
 
-void SearchFromIntialNode(int column, int row, Board* board, DictionaryTrie* Trie, std::vector<char*>* words)
+void SearchFromIntialNode(int column, int row, Board* board, DictionaryTrie* Trie, ThreadsafeStack<char*>* words)
 {
 	TrieCursor dictionaryCursor(Trie);
 	BoardCursor boardCursor(board);
@@ -33,7 +35,7 @@ void SearchFromIntialNode(int column, int row, Board* board, DictionaryTrie* Tri
 	}
 }
 
-void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::vector<char*>* words)
+void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, ThreadsafeStack<char*>* words)
 {
 	Direction allDirections[4] = { Right, Left, Up, Down };
 	for(int i = 0; i < 4; i++)
@@ -46,7 +48,7 @@ void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::ve
 			if (dictCursor->hasChild(*boardLetter))
 			{
 				dictCursor->goToChild(*boardLetter);
-
+				dictCursor->LockNode();
 				if (dictCursor->isWord() && !dictCursor->getWordUsed())
 				{
 					char* word = boardCursor->GetWord();
@@ -55,9 +57,12 @@ void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::ve
 #endif
 
 					dictCursor->setWordUsed();
-					words->push_back(word);
+					words->Lock();
+					words->push(word);
+					words->Unlock();
 					//delete[] word;
 				}
+				dictCursor->UnlockNode();
 
 				RecursiveTreeWalk(boardCursor, dictCursor, words);
 				dictCursor->goToParent();
@@ -66,6 +71,24 @@ void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::ve
 			boardCursor->Pop();
 		}
 	}	
+}
+
+void threadBaseLevel(Board* board, DictionaryTrie* dictionary, ThreadsafeStack<std::pair<int, int>>* taskStack, ThreadsafeStack<char*>* words)
+{
+	while(true)
+	{
+		taskStack->Lock();
+		if(taskStack->empty())
+		{
+			taskStack->Unlock();
+			break;
+		}
+
+		std::pair<int, int> thisStartPoint = taskStack->pop();
+		taskStack->Unlock();
+
+		SearchFromIntialNode(thisStartPoint.first, thisStartPoint.second, board, dictionary, words);
+	}
 }
 
 #ifdef UNITTEST
@@ -138,19 +161,33 @@ int main(int argc, char *argv[], char* envp[])
 		return -1;
 	}
 
-	std::vector<char*> foundWords;
+	ThreadsafeStack<char*> foundWords;
+	ThreadsafeStack<std::pair<int, int>> taskStack;
 	int columns = theBoard.ColumnCount();
 	int rows = theBoard.RowCount();
 
-	clock_t timer;
-	timer = clock();
-	for(int thisRow = 0; thisRow < rows; thisRow++)
+	for (int thisRow = 0; thisRow < rows; thisRow++)
 	{
-		for(int thisColumn = 0; thisColumn < columns; thisColumn++)
+		for (int thisColumn = 0; thisColumn < columns; thisColumn++)
 		{
-			SearchFromIntialNode(thisColumn, thisRow, &theBoard, &theDictionary, &foundWords);
+			taskStack.push(std::pair<int, int>(thisColumn, thisRow));
 		}
 	}
+
+	clock_t timer;
+	timer = clock();
+
+	std::vector<std::thread> threadPool;
+	for (int i = 0; i < kThreadPoolSize; i++)
+	{
+		threadPool.push_back(std::thread(threadBaseLevel, &theBoard, &theDictionary, &taskStack, &foundWords));
+	}
+	
+	for (int i = 0; i < kThreadPoolSize; i++)
+	{
+		threadPool[i].join();
+	}
+
 	timer = clock() - timer;
 	float timeSpent = static_cast<float>(timer) / CLOCKS_PER_SEC;
 
@@ -160,8 +197,9 @@ int main(int argc, char *argv[], char* envp[])
 	std::ofstream outfp(path_to_results);
 	if(outfp.is_open())
 	{
-		for(char* word : foundWords)
+		while(!foundWords.empty())
 		{
+			char* word = foundWords.pop();
 			outfp.write(word, strlen(word));
 			outfp.write("\n", 1);
 		}

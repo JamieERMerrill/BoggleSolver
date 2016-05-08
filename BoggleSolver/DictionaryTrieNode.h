@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 
 // Optimization note - is there a faster solution than a STL generic?
 class CharIndexMap;
@@ -20,12 +21,12 @@ public:
 	DictionaryTrieNode* searchLetter(char letter);
 	DictionaryTrieNode* getParent() const;
 
-	bool isWord() const
+	bool isWord()
 	{
 		return mIsWord;
 	};
 
-	bool GetIsUsed() const
+	bool GetIsUsed()
 	{
 		return isUsed;
 	};
@@ -35,7 +36,18 @@ public:
 		isUsed = true;
 	};
 
+	void Lock()
+	{
+		mNodeLock.lock();
+	}
+
+	void Unlock()
+	{
+		mNodeLock.unlock();
+	}
+
 private:
+	std::mutex mNodeLock;
 	bool mIsWord;
 	bool isUsed;
 	DictionaryTrieNode* parent;

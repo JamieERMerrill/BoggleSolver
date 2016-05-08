@@ -19,3 +19,4 @@
 #include "Board.h"
 #include "BoardCursor.h"
 #include "CharIndexMap.h"
+#include "ThreadsafeStack.h"
