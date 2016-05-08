@@ -63,6 +63,11 @@ bool Board::LoadFromFile(char * filePath)
 			{
 				mRows++;
 			}
+			else if(strlen(readBuffer) == 0)
+			{
+				writeLogLineFormatted("Found blank line at line %i, assuming this is end of file.", mRows);
+				break;
+			}
 			else
 			{
 				return false;

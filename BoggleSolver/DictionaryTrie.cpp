@@ -57,11 +57,14 @@ bool DictionaryTrie::LoadFromFile(char * filePath)
 			continue;
 		}
 	
-
+#if defined(_DEBUG)
 		writeLogLineFormatted("Adding word: %s", theWord);
+#endif
+
 		bool added = Add(theWord);
 		if(!added)
 		{
+			delete[] theWord;
 			return false;
 		}
 

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <time.h>
+#include <fstream>
 
 // Purely arbitrary to make max path length reasonable
 const int kArbitraryMaxPath = 256;
@@ -41,23 +42,27 @@ void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::ve
 		bool moved = boardCursor->Move(direction);
 		if (moved)
 		{
-			if (dictCursor->hasChild(*boardCursor->GetLetter()))
+			char* boardLetter = boardCursor->GetLetter();
+			if (dictCursor->hasChild(*boardLetter))
 			{
-				dictCursor->goToChild(*boardCursor->GetLetter());
+				dictCursor->goToChild(*boardLetter);
 
 				if (dictCursor->isWord() && !dictCursor->getWordUsed())
 				{
+					char* word = boardCursor->GetWord();
 #if defined(_DEBUG)
-					writeLogLineFormatted("Adding found word %s", boardCursor->GetWord());
+					writeLogLineFormatted("Adding found word %s", word);
 #endif
 
 					dictCursor->setWordUsed();
-					words->push_back(boardCursor->GetWord());
+					words->push_back(word);
+					//delete[] word;
 				}
 
 				RecursiveTreeWalk(boardCursor, dictCursor, words);
 				dictCursor->goToParent();
 			}
+			delete[] boardLetter;
 			boardCursor->Pop();
 		}
 	}	
@@ -90,11 +95,12 @@ int main(int argc, char *argv[], char* envp[])
 
 	char path_to_dictionary[kArbitraryMaxPath];
 	char path_to_puzzle[kArbitraryMaxPath];
+	char path_to_results[kArbitraryMaxPath];
 
-	if (argc != 3)
+	if (argc != 4)
 	{
 		writeLogLine("Boggle Solver Command Line Arguments:");
-		writeLogLine("BoggleSolver.exe {PATH_TO_DICTIONARY} {PATH_TO_PUZZLE}");
+		writeLogLine("BoggleSolver.exe {PATH_TO_DICTIONARY} {PATH_TO_PUZZLE} {RESULTS_FILE}");
 		pauseForClose();
 		return 1;
 	}
@@ -104,16 +110,33 @@ int main(int argc, char *argv[], char* envp[])
 
 	strcpy_s(path_to_puzzle, argv[2]);
 	writeLogLineFormatted("Path to puzzle: %s", path_to_puzzle);
+	
+	strcpy_s(path_to_results, argv[3]);
+	writeLogLineFormatted("Path to results file %s", path_to_results);
 
 	CharIndexMap* theMap = new CharIndexMap();
 
 	writeLogLine("Loading dictionary");
 	DictionaryTrie theDictionary(theMap);
-	theDictionary.LoadFromFile(path_to_dictionary);
+	bool dictLoaded = theDictionary.LoadFromFile(path_to_dictionary);
+
+	if(!dictLoaded)
+	{
+		writeLogLine("Dictionary Load Failed");
+		pauseForClose();
+		return -1;
+	}
 
 	writeLogLine("Loading board");
 	Board theBoard;
-	theBoard.LoadFromFile(path_to_puzzle);
+	bool boardLoaded = theBoard.LoadFromFile(path_to_puzzle);
+
+	if(!boardLoaded)
+	{
+		writeLogLine("Failed board loading");
+		pauseForClose();
+		return -1;
+	}
 
 	std::vector<char*> foundWords;
 	int columns = theBoard.ColumnCount();
@@ -133,11 +156,23 @@ int main(int argc, char *argv[], char* envp[])
 
 	writeLogLineFormatted("Took %f to solve", timeSpent);
 	writeLogLineFormatted("Found %i words", foundWords.size());
-	writeLogLine("All words:");
-	for(char* word : foundWords)
+
+	std::ofstream outfp(path_to_results);
+	if(outfp.is_open())
 	{
-		writeLogLineFormatted("%s", word);
+		for(char* word : foundWords)
+		{
+			outfp.write(word, strlen(word));
+			outfp.write("\n", 1);
+		}
 	}
+
+	
+	//writeLogLine("All words:");
+	//for(char* word : foundWords)
+	//{
+	//	writeLogLineFormatted("%s", word);
+	//}
 
 	pauseForClose();
 
