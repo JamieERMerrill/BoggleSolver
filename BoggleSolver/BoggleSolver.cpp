@@ -7,6 +7,7 @@
 #include <time.h>
 #include <fstream>
 #include <thread>
+#include <algorithm>
 
 // Purely arbitrary to make max path length reasonable
 const int kArbitraryMaxPath = 256;
@@ -89,6 +90,31 @@ void threadBaseLevel(Board* board, DictionaryTrie* dictionary, ThreadsafeStack<s
 
 		SearchFromIntialNode(thisStartPoint.first, thisStartPoint.second, board, dictionary, words);
 	}
+}
+
+bool CompareStringsNoCase(char* first, char* second)
+{
+	int i = 0;
+	int firstLength = strlen(first);
+	int secondLength = strlen(second);
+	while(i < firstLength && i < secondLength)
+	{
+		if(tolower(first[i]) < tolower(second[i]))
+		{
+			return true;
+		}
+		else if(tolower(second[i]) < tolower(first[i]))
+		{
+			return false;
+		}
+		i++;
+	}
+	if(firstLength < secondLength)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 #ifdef UNITTEST
@@ -194,12 +220,22 @@ int main(int argc, char *argv[], char* envp[])
 	writeLogLineFormatted("Took %f to solve", timeSpent);
 	writeLogLineFormatted("Found %i words", foundWords.size());
 
+	std::vector<char*> words;
+
+	//We can sort a vector - we can't sort a threadsafestack - we don't care about speed at this point, so let's just make it a vector and go from there.
+	while (!foundWords.empty())
+	{
+		char* word = foundWords.pop();
+		words.push_back(word);
+	}
+
+	std::sort(words.begin(), words.end(), CompareStringsNoCase);
+
 	std::ofstream outfp(path_to_results);
 	if(outfp.is_open())
 	{
-		while(!foundWords.empty())
+		for(char* word : words)
 		{
-			char* word = foundWords.pop();
 			outfp.write(word, strlen(word));
 			outfp.write("\n", 1);
 		}
