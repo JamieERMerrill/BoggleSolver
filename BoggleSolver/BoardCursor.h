@@ -47,4 +47,15 @@ public:
 	bool Pop();
 
 	char* GetWord();
+	char* GetLetter()
+	{
+		if(mLetter)
+		{
+			char* theLetter = new char[2];
+			theLetter[0] = mLetter[0];
+			theLetter[1] = '\0';
+			return theLetter;
+		}
+		return nullptr;
+	};
 };

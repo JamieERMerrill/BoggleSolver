@@ -1,20 +1,19 @@
 #pragma once
 
 // Optimization note - is there a faster solution than a STL generic?
-#include <map>
+class CharIndexMap;
 
 class DictionaryTrieNode
 {
 
-typedef std::map<char, DictionaryTrieNode*> DictionaryTrieNodeMap;
 public:
-	DictionaryTrieNode();
-	DictionaryTrieNode(DictionaryTrieNode* parent);
+	DictionaryTrieNode(CharIndexMap* charMap);
+	DictionaryTrieNode(CharIndexMap* charMap, DictionaryTrieNode* parent);
 	~DictionaryTrieNode();
 
-	void SetIsWord(char* word)
+	void SetIsWord()
 	{
-		mWord = word;
+		mIsWord = true;
 	};
 
 	DictionaryTrieNode* addLetter(char letter);
@@ -23,17 +22,24 @@ public:
 
 	bool isWord() const
 	{
-		return mWord != nullptr && mWord[0] != '\0';
+		return mIsWord;
 	};
 
-	char* getWord() const
+	bool GetIsUsed() const
 	{
-		return mWord;
+		return isUsed;
+	};
+
+	void SetUsed()
+	{
+		isUsed = true;
 	};
 
 private:
-	char* mWord;
+	bool mIsWord;
+	bool isUsed;
 	DictionaryTrieNode* parent;
-	DictionaryTrieNodeMap mChildren;
+	CharIndexMap* mMap;
+	DictionaryTrieNode* mChildren[26];
 };
 

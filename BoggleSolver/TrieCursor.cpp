@@ -3,7 +3,7 @@
 
 TrieCursor::TrieCursor(DictionaryTrie* trie):
 	theTrie(trie),
-	currentNode(trie->getHead())
+	currentNode(trie->GetHead())
 {
 }
 
@@ -15,6 +15,16 @@ void TrieCursor::set(DictionaryTrieNode * newNode)
 bool TrieCursor::isWord() const
 {
 	return currentNode->isWord();
+}
+
+bool TrieCursor::getWordUsed() const
+{
+	return currentNode->GetIsUsed();
+}
+
+void TrieCursor::setWordUsed()
+{
+	currentNode->SetUsed();
 }
 
 bool TrieCursor::hasChild(char letter) const

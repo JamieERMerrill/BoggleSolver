@@ -116,9 +116,11 @@ char* BoardCursor::GetWord()
 		word[length] = '\0';
 		word[length-1] = *mLetter;
 
-		for(unsigned int i = 0; i < mPriorLetters.size(); i++)
+		int currentIndex = 0;
+		for(char* thisChar : mPriorLetters)
 		{
-			word[i] = *mPriorLetters[i];
+			word[currentIndex] = *thisChar;
+			currentIndex++;
 		}
 
 		return word;

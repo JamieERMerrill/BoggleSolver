@@ -2,10 +2,10 @@
 #include "DictionaryTrie.h"
 #include <fstream>
 
-DictionaryTrie::DictionaryTrie():
-	head(new DictionaryTrieNode())
+DictionaryTrie::DictionaryTrie(CharIndexMap* charMap):
+	head(new DictionaryTrieNode(charMap))
 {
-	resetCursor();
+	ResetInternalCursor();
 }
 
 DictionaryTrie::~DictionaryTrie()
@@ -16,7 +16,7 @@ DictionaryTrie::~DictionaryTrie()
 	}
 }
 
-bool DictionaryTrie::loadFromFile(char * filePath)
+bool DictionaryTrie::LoadFromFile(char * filePath)
 {
 	std::ifstream infp(filePath, std::ios_base::in);
 	if(infp.fail())
@@ -26,12 +26,15 @@ bool DictionaryTrie::loadFromFile(char * filePath)
 
 	while(infp.good())
 	{
-		char theWord[256];
-		infp.getline(theWord, 256);
+		// The longest word in a major dictionary is 45 characters long. The next longest word is 182. After that 1909 and 189819 letters.
+		// I'll stick with pneumonoultramicascropicsilicovolcansoconiosis as my longest permitted word. Deal with it.
+		char* theWord = new char[46];
+		infp.getline(theWord, 46);
 		
 		// Don't include words with apostrophes
 		auto apostropheFound = strstr(theWord, "'");
-		if (apostropheFound)
+		auto quotesFound = strstr(theWord, "\"");
+		if (apostropheFound || quotesFound)
 		{
 			continue;
 		}
@@ -48,7 +51,7 @@ bool DictionaryTrie::loadFromFile(char * filePath)
 			wordLength++;
 		}
 		
-		// Don't include words shorter than three 
+		// Don't include words shorter than three letters
 		if (wordLength < 3)
 		{
 			continue;
@@ -56,45 +59,61 @@ bool DictionaryTrie::loadFromFile(char * filePath)
 	
 
 		writeLogLineFormatted("Adding word: %s", theWord);
-		add(theWord);
+		bool added = Add(theWord);
+		if(!added)
+		{
+			return false;
+		}
+
+		delete[] theWord;
 	}
 
+	ResetInternalCursor();
 	return true;
 }
 
-void DictionaryTrie::add(char * word)
+bool DictionaryTrie::Add(char * word)
 {
-	resetCursor();
+	ResetInternalCursor();
 	char* currentChar = nullptr;
 	for(currentChar=word; *currentChar!='\0'; currentChar++)
 	{
-		cursor = cursor->addLetter(*currentChar);
+		DictionaryTrieNode* nextNode = mInternalCursor->addLetter(*currentChar);
+		if (nextNode)
+		{
+			mInternalCursor = nextNode;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
-	cursor->SetIsWord(word);
+	mInternalCursor->SetIsWord();
+	return true;
 }
 
-void DictionaryTrie::resetCursor()
+void DictionaryTrie::ResetInternalCursor()
 {
-	cursor = head;
+	mInternalCursor = head;
 }
 
-bool DictionaryTrie::searchAtCursor(char letter) const
+bool DictionaryTrie::SearchAtInternalCursor(char letter) const
 {
-	auto found = cursor->searchLetter(letter);
+	auto found = mInternalCursor->searchLetter(letter);
 	return found != nullptr;
 }
 
-void DictionaryTrie::cursorToParent()
+void DictionaryTrie::PopInternalCursor()
 {
-	DictionaryTrieNode* parent = cursor->getParent();
+	DictionaryTrieNode* parent = mInternalCursor->getParent();
 	if(parent)
 	{
-		cursor = parent;
+		mInternalCursor = parent;
 	}
 }
 
-DictionaryTrieNode * DictionaryTrie::getHead()
+DictionaryTrieNode * DictionaryTrie::GetHead() const
 {
 	return head;
 }

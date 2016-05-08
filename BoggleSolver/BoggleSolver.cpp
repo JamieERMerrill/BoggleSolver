@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <cstring>
+#include <time.h>
 
 // Purely arbitrary to make max path length reasonable
 const int kArbitraryMaxPath = 256;
@@ -14,6 +15,52 @@ void pauseForClose()
 	writeLogLine("Hit enter to close");
 	//Wait for input
 	std::cin.get();
+}
+
+void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::vector<char*>* words);
+
+void SearchFromIntialNode(int column, int row, Board* board, DictionaryTrie* Trie, std::vector<char*>* words)
+{
+	TrieCursor dictionaryCursor(Trie);
+	BoardCursor boardCursor(board);
+
+	boardCursor.StartFrom(column, row);
+	if (dictionaryCursor.hasChild(*boardCursor.GetLetter()))
+	{
+		dictionaryCursor.goToChild(*boardCursor.GetLetter());
+		RecursiveTreeWalk(&boardCursor, &dictionaryCursor, words);
+	}
+}
+
+void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, std::vector<char*>* words)
+{
+	Direction allDirections[4] = { Right, Left, Up, Down };
+	for(int i = 0; i < 4; i++)
+	{
+		Direction direction = allDirections[i];
+		bool moved = boardCursor->Move(direction);
+		if (moved)
+		{
+			if (dictCursor->hasChild(*boardCursor->GetLetter()))
+			{
+				dictCursor->goToChild(*boardCursor->GetLetter());
+
+				if (dictCursor->isWord() && !dictCursor->getWordUsed())
+				{
+#if defined(_DEBUG)
+					writeLogLineFormatted("Adding found word %s", boardCursor->GetWord());
+#endif
+
+					dictCursor->setWordUsed();
+					words->push_back(boardCursor->GetWord());
+				}
+
+				RecursiveTreeWalk(boardCursor, dictCursor, words);
+				dictCursor->goToParent();
+			}
+			boardCursor->Pop();
+		}
+	}	
 }
 
 #ifdef UNITTEST
@@ -58,16 +105,43 @@ int main(int argc, char *argv[], char* envp[])
 	strcpy_s(path_to_puzzle, argv[2]);
 	writeLogLineFormatted("Path to puzzle: %s", path_to_puzzle);
 
+	CharIndexMap* theMap = new CharIndexMap();
+
 	writeLogLine("Loading dictionary");
-	DictionaryTrie theDictionary;
+	DictionaryTrie theDictionary(theMap);
 	theDictionary.LoadFromFile(path_to_dictionary);
 
 	writeLogLine("Loading board");
 	Board theBoard;
 	theBoard.LoadFromFile(path_to_puzzle);
 
+	std::vector<char*> foundWords;
+	int columns = theBoard.ColumnCount();
+	int rows = theBoard.RowCount();
+
+	clock_t timer;
+	timer = clock();
+	for(int thisRow = 0; thisRow < rows; thisRow++)
+	{
+		for(int thisColumn = 0; thisColumn < columns; thisColumn++)
+		{
+			SearchFromIntialNode(thisColumn, thisRow, &theBoard, &theDictionary, &foundWords);
+		}
+	}
+	timer = clock() - timer;
+	float timeSpent = static_cast<float>(timer) / CLOCKS_PER_SEC;
+
+	writeLogLineFormatted("Took %f to solve", timeSpent);
+	writeLogLineFormatted("Found %i words", foundWords.size());
+	writeLogLine("All words:");
+	for(char* word : foundWords)
+	{
+		writeLogLineFormatted("%s", word);
+	}
+
 	pauseForClose();
 
+	delete theMap;
 	return 0;
 }
 

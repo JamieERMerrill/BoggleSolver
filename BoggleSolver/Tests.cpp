@@ -10,9 +10,10 @@ void logTest(char* testName, bool status)
 
 bool test_LoadWordSimple()
 {
-	DictionaryTrie testTrie;
+	CharIndexMap* map = new CharIndexMap();
+	DictionaryTrie testTrie(map);
 	TrieCursor cursor(&testTrie);
-	testTrie.add("cat");
+	testTrie.Add("cat");
 
 	bool got_c = cursor.goToChild('c');
 	bool got_a = cursor.goToChild('a');
@@ -25,11 +26,12 @@ bool test_LoadWordSimple()
 
 bool test_LoadMultipleWords()
 {
-	DictionaryTrie testTrie;
+	CharIndexMap* map = new CharIndexMap();
+	DictionaryTrie testTrie(map);
 	TrieCursor cursor(&testTrie);
 
-	testTrie.add("cat");
-	testTrie.add("hat");
+	testTrie.Add("cat");
+	testTrie.Add("hat");
 
 	bool got_c = cursor.goToChild('c');
 	bool got_a = cursor.goToChild('a');
@@ -38,7 +40,7 @@ bool test_LoadMultipleWords()
 	bool isWord_cat = cursor.isWord();
 	bool cat_components = got_c && got_a && got_t;
 	
-	cursor.set(testTrie.getHead());
+	cursor.set(testTrie.GetHead());
 
 	bool got_h = cursor.goToChild('h');
 	bool got_a_2 = cursor.goToChild('a');
@@ -52,11 +54,12 @@ bool test_LoadMultipleWords()
 
 bool test_LoadSinglePlural()
 {
-	DictionaryTrie testTrie;
+	CharIndexMap* map = new CharIndexMap();
+	DictionaryTrie testTrie(map);
 	TrieCursor cursor(&testTrie);
 
-	testTrie.add("cat");
-	testTrie.add("cats");
+	testTrie.Add("cat");
+	testTrie.Add("cats");
 
 	bool got_c = cursor.goToChild('c');
 	bool got_a = cursor.goToChild('a');

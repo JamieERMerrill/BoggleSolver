@@ -228,6 +228,7 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="BoardCursor.h" />
+    <ClInclude Include="CharIndexMap.h" />
     <ClInclude Include="DictionaryTrie.h" />
     <ClInclude Include="DictionaryTrieNode.h" />
     <ClInclude Include="Logging.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="BoardCursor.cpp" />
     <ClCompile Include="BoggleSolver.cpp" />
+    <ClCompile Include="CharIndexMap.cpp" />
     <ClCompile Include="DictionaryTrie.cpp" />
     <ClCompile Include="DictionaryTrieNode.cpp" />
     <ClCompile Include="Logging.cpp" />

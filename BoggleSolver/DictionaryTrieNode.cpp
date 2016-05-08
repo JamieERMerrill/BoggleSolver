@@ -1,16 +1,19 @@
 #include "stdafx.h"
 
-DictionaryTrieNode::DictionaryTrieNode() :
-	mWord(nullptr),
-	mChildren(),
-	parent(nullptr)
+DictionaryTrieNode::DictionaryTrieNode(CharIndexMap* charMap) :
+	mIsWord(false),
+	isUsed(false),
+	parent(nullptr),
+	mMap(charMap)
 {
+	
 }
 
-DictionaryTrieNode::DictionaryTrieNode(DictionaryTrieNode* parent) :
-	mWord(nullptr),
-	mChildren(),
-	parent(parent)
+DictionaryTrieNode::DictionaryTrieNode(CharIndexMap* charMap, DictionaryTrieNode* parent) :
+	mIsWord(false),
+	isUsed(false),
+	parent(parent),
+	mMap(charMap)
 {	
 }
 
@@ -21,23 +24,30 @@ DictionaryTrieNode::~DictionaryTrieNode()
 
 DictionaryTrieNode* DictionaryTrieNode::addLetter(char letter)
 {
-	auto it = mChildren.find(letter);
-	if(it != mChildren.end())
+	int index = mMap->get(letter);
+	if(index < 0)
 	{
-		return it->second;
+		return nullptr;
+	}
+	if(mChildren[index] != nullptr)
+	{
+		return mChildren[index];
 	}
 
-	DictionaryTrieNode* node = new DictionaryTrieNode(this);
-	mChildren[letter] = node;
+	DictionaryTrieNode* node = new DictionaryTrieNode(mMap, this);
+	mChildren[index] = node;
 	return node;
 }
 
 DictionaryTrieNode* DictionaryTrieNode::searchLetter(char letter)
 {
-	auto it = mChildren.find(letter);
-	if(it != mChildren.end())
+	int index = mMap->get(letter);
+	if(index >= 0)
 	{
-		return it->second;
+		if(mChildren[index] != nullptr)
+		{
+			return mChildren[index];
+		}
 	}
 
 	// not found - return null pointer

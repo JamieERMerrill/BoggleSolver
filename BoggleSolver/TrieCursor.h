@@ -12,6 +12,8 @@ public:
 	TrieCursor(DictionaryTrie* trie);
 	void set(DictionaryTrieNode* newNode);
 	bool isWord() const;
+	bool getWordUsed() const;
+	void setWordUsed();
 	bool hasChild(char letter) const;
 	bool goToChild(char letter);
 	void goToParent();

@@ -2,23 +2,24 @@
 
 // forward declarations
 class DictionaryTrieNode;
+class CharIndexMap;
 
 class DictionaryTrie
 {
 private:
 	DictionaryTrieNode* head;
-	DictionaryTrieNode* cursor;
+	DictionaryTrieNode* mInternalCursor;
 
 public:
-	DictionaryTrie();
+	DictionaryTrie(CharIndexMap* charMap);
 	~DictionaryTrie();
 
-	bool loadFromFile(char* filePath);
-	void add(char* word);
+	bool LoadFromFile(char* filePath);
+	bool Add(char* word);
 
-	void resetCursor();
-	bool searchAtCursor(char letter) const;
-	void cursorToParent();
+	void ResetInternalCursor();
+	bool SearchAtInternalCursor(char letter) const;
+	void PopInternalCursor();
 
-	DictionaryTrieNode* getHead();
+	DictionaryTrieNode* GetHead() const;
 };
