@@ -38,8 +38,8 @@ void SearchFromIntialNode(int column, int row, Board* board, DictionaryTrie* Tri
 
 void RecursiveTreeWalk(BoardCursor* boardCursor, TrieCursor* dictCursor, ThreadsafeStack<char*>* words)
 {
-	Direction allDirections[4] = { Right, Left, Up, Down };
-	for(int i = 0; i < 4; i++)
+	Direction allDirections[8] = { Right, Left, Up, Down, UpRight, UpLeft, DownRight, DownLeft };
+	for(int i = 0; i < 8; i++)
 	{
 		Direction direction = allDirections[i];
 		bool moved = boardCursor->Move(direction);

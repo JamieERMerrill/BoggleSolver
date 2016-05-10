@@ -21,7 +21,11 @@ struct Position
 enum Direction
 {
 	Up,
+	UpLeft,
+	UpRight,
 	Down,
+	DownLeft,
+	DownRight,
 	Left,
 	Right
 };

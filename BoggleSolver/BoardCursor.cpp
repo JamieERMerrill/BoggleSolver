@@ -50,8 +50,23 @@ bool BoardCursor::Move(Direction direction)
 		case Up:
 			newPosition->y -= 1;
 			break;
+		case UpLeft:
+			newPosition->y -= 1;
+			newPosition->x -= 1;
+			break;
+		case UpRight:
+			newPosition->y -= 1;
+			newPosition->x += 1;
+			break;
 		case Down:
 			newPosition->y += 1;
+			break;
+		case DownLeft:
+			newPosition->y += 1;
+			newPosition->x -= 1;
+		case DownRight:
+			newPosition->y += 1;
+			newPosition->x += 1;
 			break;
 		case Left:
 			newPosition->x -= 1;
